@@ -1,0 +1,41 @@
+COMO ADICIONAR MÚSICA AMBIENTE
+================================
+
+O jogo já está preparado para tocar uma trilha em loop — só falta o
+arquivo de áudio, porque eu não posso incluir música pronta (é
+protegida por direitos autorais e eu não crio/gero áudio).
+
+Passo a passo:
+
+1. Consiga um arquivo MP3 de música ambiente livre de direitos.
+   Sugestões de bancos gratuitos/licença Creative Commons:
+     - https://freesound.org
+     - https://pixabay.com/music/  (sem necessidade de atribuição)
+     - https://freemusicarchive.org
+     - https://incompetech.com (Kevin MacLeod, atribuição simples)
+   Busque por termos como: "lofi japanese", "koto ambient",
+   "rain ambient loop", "zen garden music".
+
+2. Renomeie o arquivo para exatamente:
+       ambient-cafe.mp3
+
+3. Coloque esse arquivo aqui dentro desta pasta:
+       sushi-sudoku/assets/music/ambient-cafe.mp3
+
+4. Pronto. Dentro do jogo, vá em Configurações → "Som ambiente" e
+   ative o toggle. A música toca em loop baixinho enquanto você joga.
+
+Quer trocar o nome do arquivo ou usar outro formato (ex: .ogg)?
+Edite esta linha no index.html:
+
+    <audio id="bgMusic" loop preload="none">
+      <source src="assets/music/ambient-cafe.mp3" type="audio/mpeg">
+    </audio>
+
+Quer mais de uma faixa (uma por tema, por exemplo)? Isso dá pra
+evoluir depois — me peça que eu implemento a troca de faixa por tema.
+
+Observação técnica: navegadores bloqueiam áudio com autoplay sem
+interação do usuário. Por isso a música só começa a tocar quando
+você mesmo liga o toggle "Som ambiente" (isso conta como interação
+e libera o áudio).

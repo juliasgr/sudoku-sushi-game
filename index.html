@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Sushi Sudoku</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='7' y='33' width='50' height='22' rx='10' fill='%23FBF6E9' stroke='%23DCC79C' stroke-width='1.8'/%3E%3Crect x='9' y='11' width='46' height='26' rx='11' fill='%23EE8E67' stroke='%23D9713E' stroke-width='1.2'/%3E%3Cpath d='M14 20 Q32 15 50 20' stroke='%23F9C6A8' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M14 28 Q32 23 50 28' stroke='%23F9C6A8' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+
+<div class="petal-field" id="petalField" aria-hidden="true"></div>
+
+<!-- ===================== TELA DE LOGIN ===================== -->
+<section id="screen-auth" class="screen screen-auth">
+  <div class="auth-card">
+    <p class="eyebrow">bem-vindo(a) de volta</p>
+    <h1 class="game-title auth-title">Sushi<span>Sudoku</span></h1>
+
+    <div id="authFormsWrap">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="signin" type="button">Entrar</button>
+        <button class="auth-tab" data-tab="signup" type="button">Criar conta</button>
+      </div>
+
+      <div class="auth-panel" id="authPanelSignin">
+        <label class="auth-field">
+          <span>E-mail</span>
+          <input type="email" id="signinEmail" autocomplete="email" placeholder="voce@exemplo.com">
+        </label>
+        <label class="auth-field">
+          <span>Senha</span>
+          <input type="password" id="signinPassword" autocomplete="current-password" placeholder="••••••••">
+        </label>
+        <button class="menu-btn menu-btn--primary auth-submit" id="btnSignIn">Entrar</button>
+        <button class="text-btn" id="btnForgotPassword">Esqueci minha senha</button>
+      </div>
+
+      <div class="auth-panel" id="authPanelSignup" hidden>
+        <label class="auth-field">
+          <span>Nome de exibição</span>
+          <input type="text" id="signupUsername" autocomplete="nickname" placeholder="como podemos te chamar?">
+        </label>
+        <label class="auth-field">
+          <span>E-mail</span>
+          <input type="email" id="signupEmail" autocomplete="email" placeholder="voce@exemplo.com">
+        </label>
+        <label class="auth-field">
+          <span>Senha</span>
+          <input type="password" id="signupPassword" autocomplete="new-password" placeholder="mínimo 6 caracteres">
+        </label>
+        <button class="menu-btn menu-btn--primary auth-submit" id="btnSignUp">Criar conta</button>
+      </div>
+
+      <p class="auth-message" id="authMessage" hidden></p>
+    </div>
+
+    <button class="text-btn" id="btnPlayLocally">Jogar sem conta (progresso não é salvo)</button>
+
+    <p class="auth-config-warning" id="authConfigWarning" hidden>
+      O Supabase ainda não foi configurado neste projeto (ou não foi possível
+      conectar) — veja <code>supabase-config.js</code> no README. Por enquanto,
+      o jogo funciona só localmente, sem salvar na nuvem.
+    </p>
+  </div>
+</section>
+
+<!-- ===================== TELA INICIAL ===================== -->
+<section id="screen-home" class="screen screen-home" hidden>
+  <div class="home-scene" aria-hidden="true">
+    <svg class="home-illustration" viewBox="0 0 900 360" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FBEFE0"/>
+          <stop offset="65%" stop-color="#F6E3D8"/>
+          <stop offset="100%" stop-color="#F0D9CE"/>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="900" height="360" fill="url(#skyGrad)"/>
+      <circle cx="740" cy="80" r="52" fill="#F4C9C2" opacity="0.85"/>
+      <path d="M0,230 Q120,190 260,220 T520,210 T900,230 V360 H0 Z" fill="#CFAF87" opacity="0.55"/>
+      <path d="M0,270 Q150,235 320,262 T650,255 T900,270 V360 H0 Z" fill="#B99163" opacity="0.5"/>
+      <!-- torii -->
+      <g transform="translate(120,150)">
+        <rect x="-6" y="0" width="12" height="120" fill="#9C5B4A"/>
+        <rect x="94" y="0" width="12" height="120" fill="#9C5B4A"/>
+        <rect x="-20" y="-6" width="146" height="16" rx="4" fill="#B4664F"/>
+        <rect x="-6" y="22" width="118" height="10" rx="3" fill="#B4664F"/>
+      </g>
+      <!-- casa de chá -->
+      <g transform="translate(560,150)">
+        <polygon points="0,60 110,60 130,20 -20,20" fill="#8B6F52"/>
+        <rect x="10" y="60" width="90" height="70" fill="#F3E6D4"/>
+        <rect x="42" y="90" width="26" height="40" fill="#B4664F"/>
+        <rect x="10" y="60" width="90" height="8" fill="#6F5640"/>
+      </g>
+      <!-- sakura -->
+      <g fill="#F3C9D0" opacity="0.9">
+        <circle cx="200" cy="80" r="5"/><circle cx="215" cy="90" r="5"/><circle cx="190" cy="95" r="5"/>
+        <circle cx="780" cy="180" r="4"/><circle cx="795" cy="190" r="4"/><circle cx="770" cy="192" r="4"/>
+        <circle cx="60" cy="60" r="4"/><circle cx="75" cy="70" r="4"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="home-content">
+    <h1 class="game-title">Sushi<span>Sudoku</span></h1>
+    <p class="home-tagline">Uma xícara de chá, chuva na janela, e nove tipos de sushi para arrumar com calma.</p>
+
+    <nav class="home-menu" aria-label="Menu principal">
+      <button class="menu-btn menu-btn--primary" data-action="continue" id="btnContinue" hidden>Continuar</button>
+      <button class="menu-btn menu-btn--primary" data-action="new-game">Novo jogo</button>
+      <button class="menu-btn" data-action="daily">Desafio diário</button>
+      <button class="menu-btn" data-action="stats">Estatísticas</button>
+      <button class="menu-btn" data-action="themes">Temas</button>
+      <button class="menu-btn" data-action="settings">Configurações</button>
+    </nav>
+  </div>
+
+  <button class="icon-btn home-close-hint" id="btnHomeInfo" title="Sobre">?</button>
+
+  <div class="account-badge" id="accountBadge" hidden>
+    <span id="accountEmail">—</span>
+    <button class="text-btn" id="btnSignOut">Sair</button>
+  </div>
+</section>
+
+<!-- ===================== TELA DE JOGO ===================== -->
+<section id="screen-game" class="screen screen-game" hidden>
+
+  <header class="topbar">
+    <button class="icon-btn" id="btnBack" title="Voltar ao menu" aria-label="Voltar ao menu">←</button>
+
+    <div class="topbar-info">
+      <div class="difficulty-pill" id="difficultyLabel">Médio</div>
+      <div class="timer" id="timerLabel">00:00</div>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="icon-btn" id="btnPause" title="Pausar" aria-label="Pausar">⏸</button>
+    </div>
+  </header>
+
+  <main class="game-main">
+
+    <aside class="side-panel side-panel--left">
+      <button class="tool-btn" id="btnUndo" title="Desfazer">
+        <span class="tool-icon">↶</span><span class="tool-label">Desfazer</span>
+      </button>
+      <button class="tool-btn" id="btnRedo" title="Refazer">
+        <span class="tool-icon">↷</span><span class="tool-label">Refazer</span>
+      </button>
+      <button class="tool-btn" id="btnErase" title="Borracha">
+        <span class="tool-icon">⌫</span><span class="tool-label">Borracha</span>
+      </button>
+      <button class="tool-btn" id="btnNotes" title="Anotações">
+        <span class="tool-icon">✎</span><span class="tool-label">Anotações</span>
+        <span class="tool-badge" id="notesBadge" hidden>ON</span>
+      </button>
+      <button class="tool-btn" id="btnHint" title="Dica">
+        <span class="tool-icon">🍵</span><span class="tool-label">Dica</span>
+        <span class="tool-count" id="hintCount">3</span>
+      </button>
+      <button class="tool-btn" id="btnRestart" title="Reiniciar">
+        <span class="tool-icon">⟲</span><span class="tool-label">Reiniciar</span>
+      </button>
+    </aside>
+
+    <div class="board-wrap">
+      <div class="board" id="board" role="grid" aria-label="Tabuleiro de Sushi Sudoku"></div>
+    </div>
+
+    <aside class="side-panel side-panel--right">
+      <div class="progress-card">
+        <p class="progress-title">Progresso</p>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <p class="progress-count"><span id="progressCount">0</span>/81</p>
+      </div>
+      <div class="legend-card">
+        <p class="progress-title">Peças</p>
+        <div class="legend-grid" id="legendGrid"></div>
+      </div>
+    </aside>
+  </main>
+
+  <div class="tray-wrap">
+    <div class="tray" id="tray" role="toolbar" aria-label="Bandeja de sushis"></div>
+  </div>
+</section>
+
+<!-- ===================== OVERLAYS ===================== -->
+<div class="overlay" id="overlayPause" hidden>
+  <div class="overlay-card">
+    <button class="overlay-close" data-close="overlayPause" aria-label="Fechar">✕</button>
+    <p class="overlay-eyebrow">Pausado</p>
+    <h2>Um respiro.</h2>
+    <p class="overlay-text">O chá ainda está quente. Toque para continuar quando estiver pronto.</p>
+    <button class="menu-btn menu-btn--primary" id="btnResume">Continuar jogando</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlayNewGame" hidden>
+  <div class="overlay-card">
+    <button class="overlay-close" data-close="overlayNewGame" aria-label="Fechar">✕</button>
+    <p class="overlay-eyebrow">Novo jogo</p>
+    <h2>Escolha a dificuldade</h2>
+    <div class="difficulty-grid" id="difficultyGrid"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayThemes" hidden>
+  <div class="overlay-card overlay-card--wide">
+    <button class="overlay-close" data-close="overlayThemes" aria-label="Fechar">✕</button>
+    <p class="overlay-eyebrow">Temas</p>
+    <h2>Ambientes do café</h2>
+    <div class="theme-grid" id="themeGrid"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayStats" hidden>
+  <div class="overlay-card">
+    <button class="overlay-close" data-close="overlayStats" aria-label="Fechar">✕</button>
+    <p class="overlay-eyebrow">Estatísticas</p>
+    <h2>Sua jornada de hoje</h2>
+    <div class="stats-grid" id="statsGrid"></div>
+    <p class="overlay-note" id="statsNote">As estatísticas desta versão são guardadas apenas durante esta sessão.</p>
+  </div>
+</div>
+
+<div class="overlay" id="overlaySettings" hidden>
+  <div class="overlay-card">
+    <button class="overlay-close" data-close="overlaySettings" aria-label="Fechar">✕</button>
+    <p class="overlay-eyebrow">Configurações</p>
+    <h2>Preferências</h2>
+    <div class="settings-list" id="settingsList"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlayInfo" hidden>
+  <div class="overlay-card">
+    <button class="overlay-close" data-close="overlayInfo" aria-label="Fechar">✕</button>
+    <p class="overlay-eyebrow">Sobre</p>
+    <h2>Sushi Sudoku</h2>
+    <p class="overlay-text">Um Sudoku clássico disfarçado de tarde tranquila em um café japonês. As mesmas regras de sempre: cada linha, coluna e bloco 3×3 com exatamente uma peça de cada tipo, só que com sushis no lugar dos números.</p>
+  </div>
+</div>
+
+<div class="overlay overlay--celebrate" id="overlayWin" hidden>
+  <div class="overlay-card overlay-card--win">
+    <button class="overlay-close" data-close="overlayWin" aria-label="Fechar">✕</button>
+    <p class="overlay-eyebrow">Concluído</p>
+    <h2>Tabuleiro completo ✿</h2>
+    <p class="overlay-text" id="winTime">Tempo: 00:00</p>
+    <div class="win-actions">
+      <button class="menu-btn menu-btn--primary" id="btnWinNewGame">Novo jogo</button>
+      <button class="menu-btn" id="btnWinHome">Menu principal</button>
+    </div>
+  </div>
+</div>
+
+<audio id="bgMusic" loop preload="none">
+  <source src="assets/music/ambient-cafe.mp3" type="audio/mpeg">
+</audio>
+
+<script src="supabase-config.js"></script>
+<script src="cloud.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
