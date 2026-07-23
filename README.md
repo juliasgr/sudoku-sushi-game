@@ -29,6 +29,7 @@ de café japonês, login e progresso salvo na nuvem via Supabase (grátis).
   ferramentas empilhadas e tabuleiro em largura quase total).
 - Pétalas de sakura ambiente + celebração ao concluir o tabuleiro.
 
+
 ## Estrutura
 
 ```
