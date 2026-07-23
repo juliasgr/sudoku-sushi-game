@@ -170,12 +170,8 @@ const THEMES = [
     vars: { cream:'#F6E8D6', creamDeep:'#EDD8BC', paper:'#FFF9F0', sakura:'#E3A15E', sakuraDeep:'#C97D3D', sage:'#B98354', sageDeep:'#96683F', wood:'#7A4B32', woodDeep:'#5E3822', ink:'#43301F', warmGray:'#8A6C50', gold:'#D98E3B', line:'#E3C79E' } },
   { key: 'zen', name: 'Jardim Zen', swatch: ['#EEF1E4', '#C7D6B8', '#7E9B6E'],
     vars: { cream:'#EEF1E4', creamDeep:'#DFE6CD', paper:'#FAFBF4', sakura:'#C7D6B8', sakuraDeep:'#A9BF95', sage:'#7E9B6E', sageDeep:'#647F55', wood:'#5B6B4F', woodDeep:'#455038', ink:'#333B2C', warmGray:'#6F7A63', gold:'#9CB37B', line:'#D3DEC3' } },
-  { key: 'kyoto', name: 'Noite em Kyoto', swatch: ['#2E2C38', '#8E7BB5', '#5C7488'],
-    vars: { cream:'#2E2C38', creamDeep:'#25232E', paper:'#383548', sakura:'#8E7BB5', sakuraDeep:'#71609A', sage:'#5C7488', sageDeep:'#496076', wood:'#221F2B', woodDeep:'#17151C', ink:'#F1E9DA', warmGray:'#B8AFC9', gold:'#D3A75C', line:'#48435A' } },
   { key: 'matsuri', name: 'Festival Matsuri', swatch: ['#FBE9DE', '#E86A5C', '#4F8C82'],
     vars: { cream:'#FBE9DE', creamDeep:'#F6D4BF', paper:'#FFF5EC', sakura:'#E86A5C', sakuraDeep:'#CC4E42', sage:'#4F8C82', sageDeep:'#3B6E65', wood:'#7A3B2E', woodDeep:'#5C2A20', ink:'#3D231C', warmGray:'#8C5C4C', gold:'#E8B14A', line:'#F0C3A8' } },
-  { key: 'templo', name: 'Templo Antigo', swatch: ['#EFE6D0', '#C79A5B', '#7C8C6B'],
-    vars: { cream:'#EFE6D0', creamDeep:'#E1D3AF', paper:'#F8F2E1', sakura:'#C79A5B', sakuraDeep:'#A97C3E', sage:'#7C8C6B', sageDeep:'#63704F', wood:'#6B4A2D', woodDeep:'#4E3520', ink:'#3A2E1D', warmGray:'#7C6C52', gold:'#B8892E', line:'#D8C398' } },
   { key: 'chuva', name: 'Chuva no Japão', swatch: ['#E4E8EA', '#A9C1CC', '#7A93A0'],
     vars: { cream:'#E4E8EA', creamDeep:'#D2D9DC', paper:'#F3F6F7', sakura:'#A9C1CC', sakuraDeep:'#87A6B3', sage:'#7A93A0', sageDeep:'#607A88', wood:'#4C5C63', woodDeep:'#37444A', ink:'#2E383C', warmGray:'#647178', gold:'#9CADAF', line:'#C4D0D4' } },
   { key: 'inverno', name: 'Inverno', swatch: ['#EEF3F5', '#D7E4EA', '#8FA9AE'],
@@ -466,8 +462,7 @@ function onCellClick(index) {
   if (state.paused) return;
   state.selected = index;
   if (state.selectedTray && !state.given[index]) {
-    const placed = placeValue(index, state.selectedTray);
-    if (placed) state.selectedTray = 0; // sushi desmarca após ser usado
+    placeValue(index, state.selectedTray);
   }
   renderAll();
 }
@@ -691,17 +686,24 @@ function openThemes() {
 }
 
 /* ---- Settings overlay ---- */
-const bgMusic = $('#bgMusic');
 function applySoundSetting() {
   if (!bgMusic) return;
   if (state.settings.sound) {
     bgMusic.volume = 0.35;
     const p = bgMusic.play();
-    if (p && p.catch) p.catch(() => { /* navegador bloqueou até haver mais interação */ });
+    if (p && p.catch) p.catch(() => {});
   } else {
     bgMusic.pause();
   }
+  const btn = $('#btnSound');
+  if (btn) btn.textContent = state.settings.sound ? '🔊' : '🔇';
 }
+
+$('#btnSound').addEventListener('click', () => {
+  state.settings.sound = !state.settings.sound;
+  applySoundSetting();
+  $('#btnSound').textContent = state.settings.sound ? '🔊' : '🔇';
+});
 
 function openSettings() {
   const list = $('#settingsList');
@@ -869,6 +871,13 @@ $('#btnSignUp').addEventListener('click', async () => {
   btn.disabled = false; btn.textContent = 'Criar conta';
   if (res.error) { showAuthMessage(res.error, true); return; }
   if (res.needsEmailConfirmation) showAuthMessage('Conta criada! Confira seu e-mail para confirmar antes de entrar.', false);
+});
+
+$('#signinPassword').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') $('#btnSignIn').click();
+});
+$('#signupPassword').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') $('#btnSignUp').click();
 });
 
 $('#btnForgotPassword').addEventListener('click', async () => {
